@@ -1,0 +1,64 @@
+version: '3.7'
+services:
+  trino:
+    hostname: trino
+    image: 'trinodb/trino:latest'
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./etc:/usr/lib/trino/etc
+    networks:
+      - trino-network
+
+  mariadb:
+    hostname: mariadbtest
+    image: mariadb:latest
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_DATABASE: metastore_db
+    networks:
+      - trino-network
+
+  hive-metastore:
+    hostname: hive-metastore
+    build: .
+    ports:
+      - '10001:10001' # Port of metastore
+      - '10000:10000' # Prot for Beeline
+    volumes:
+      - ${PWD}/hivedata:/user/hive
+      - ${PWD}/conf/hive-site.xml:/opt/apache-hive-3.1.3-bin/conf/hive-site.xml
+      - ${PWD}/conf/core-site.xml:/opt/hadoop-3.3.3/etc/hadoop/core-site.xml
+    environment:
+      METASTORE_DB_HOSTNAME: mariadbtest
+    depends_on:
+      - mariadb
+    networks:
+      - trino-network
+  minio:
+    hostname: minio
+    image: 'quay.io/minio/minio:latest'
+    container_name: minio
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - ./minio-data:/data
+    environment:
+      MINIO_ACCESS_KEY: minio_access_key
+      MINIO_SECRET_KEY: minio_secret_key
+    command: server /data --console-address ":9001"
+    networks:
+      - trino-network
+
+volumes:
+  minio-data:
+    driver: local
+
+networks:
+  trino-network:
+    driver: bridge
