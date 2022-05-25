@@ -6,12 +6,12 @@ services:
     ports:
       - '8080:8080'
     volumes:
-      - ./etc:/usr/lib/trino/etc
+      - ./etc:/etc/trino
     networks:
       - trino-network
 
   mariadb:
-    hostname: mariadbtest
+    hostname: mariadb
     image: mariadb:latest
     ports:
       - 3306:3306
@@ -27,14 +27,11 @@ services:
     hostname: hive-metastore
     build: .
     ports:
-      - '10001:10001' # Port of metastore
-      - '10000:10000' # Prot for Beeline
+      - '9083:9083' # Port of metastore
     volumes:
       - ${PWD}/hivedata:/user/hive
-      - ${PWD}/conf/hive-site.xml:/opt/apache-hive-3.1.3-bin/conf/hive-site.xml
+      - ${PWD}/conf/metastore-site.xml:/opt/apache-hive-metastore-3.1.3-bin/conf/metastore-site.xml
       - ${PWD}/conf/core-site.xml:/opt/hadoop-3.3.3/etc/hadoop/core-site.xml
-    environment:
-      METASTORE_DB_HOSTNAME: mariadbtest
     depends_on:
       - mariadb
     networks:
