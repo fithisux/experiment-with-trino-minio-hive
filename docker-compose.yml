@@ -36,7 +36,7 @@ services:
       - mariadb
     networks:
       - trino-network
-      
+
   minio:
     hostname: minio
     image: 'quay.io/minio/minio:latest'
@@ -47,8 +47,8 @@ services:
     volumes:
       - ./minio-data:/data
     environment:
-      MINIO_ACCESS_KEY: minio_access_key
-      MINIO_SECRET_KEY: minio_secret_key
+      MINIO_ROOT_USER: minio_access_key
+      MINIO_ROOT_PASSWORD: minio_secret_key
     command: server /data --console-address ":9001"
     networks:
       - trino-network
