@@ -24,14 +24,15 @@ services:
       - trino-network
 
   hive-metastore:
+    user: "${UID}:${GID}"
     hostname: hive-metastore
     build: .
     ports:
       - '9083:9083' # Port of metastore
     volumes:
-      - ${PWD}/hivedata:/user/hive
+      - hive-data:/user/hive
       - ${PWD}/conf/metastore-site.xml:/opt/apache-hive-metastore-3.1.3-bin/conf/metastore-site.xml
-      - ${PWD}/conf/core-site.xml:/opt/hadoop-3.3.4/etc/hadoop/core-site.xml
+      - ${PWD}/conf/core-site.xml:/opt/hadoop-3.3.6/etc/hadoop/core-site.xml
     depends_on:
       - mariadb
     networks:
@@ -45,7 +46,7 @@ services:
       - '9000:9000'
       - '9001:9001'
     volumes:
-      - ./minio-data:/data
+      - minio-data:/data
     environment:
       MINIO_ROOT_USER: minio_access_key
       MINIO_ROOT_PASSWORD: minio_secret_key
@@ -55,6 +56,8 @@ services:
 
 volumes:
   minio-data:
+    driver: local
+  hive-data:
     driver: local
 
 networks:

@@ -1,6 +1,5 @@
 #!/bin/sh
 
-#export HADOOP_HOME=/opt/hadoop-3.3.4
 export HADOOP_OPTS="$HADOOP_OPTS -Djava.io.tmpdir=/user/hive/tmp"
 
 $HADOOP_HOME/bin/hadoop fs -mkdir /user/hive/tmp

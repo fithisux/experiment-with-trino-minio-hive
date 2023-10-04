@@ -2,17 +2,18 @@ FROM adoptopenjdk/openjdk8:latest
 
 WORKDIR /opt
 
-ENV HADOOP_VERSION=3.3.4
+ENV HADOOP_VERSION=3.3.6
 ENV METASTORE_VERSION=3.1.3
+ENV MYSQL_CONNECTORJ=mysql-connector-j-8.1.0
 
 ENV HADOOP_HOME=/opt/hadoop-${HADOOP_VERSION}
 ENV HIVE_HOME=/opt/apache-hive-metastore-3.1.3-bin
 ENV HADOOP_OPTIONAL_TOOLS="hadoop-aws"
 
-RUN curl -L https://repo1.maven.org/maven2/org/apache/hive/hive-standalone-metastore/3.1.3/hive-standalone-metastore-3.1.3-bin.tar.gz | tar zxf -
+RUN curl -L https://repo1.maven.org/maven2/org/apache/hive/hive-standalone-metastore/${METASTORE_VERSION}/hive-standalone-metastore-${METASTORE_VERSION}-bin.tar.gz | tar zxf -
 RUN curl -L https://dlcdn.apache.org/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz | tar zxf -
-RUN curl -L https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-j-8.0.32.tar.gz | tar zxf - 
-RUN cp mysql-connector-j-8.0.32/mysql-connector-j-8.0.32.jar ${HIVE_HOME}/lib/ && rm -rf  mysql-connector-j-8.0.32
+RUN curl -L https://dev.mysql.com/get/Downloads/Connector-J/${MYSQL_CONNECTORJ}.tar.gz | tar zxf - 
+RUN cp ${MYSQL_CONNECTORJ}/${MYSQL_CONNECTORJ}.jar ${HIVE_HOME}/lib/ && rm -rf ${MYSQL_CONNECTORJ}
 
 RUN apt-get update && apt-get install -y netcat
 
